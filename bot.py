@@ -1,4 +1,3 @@
-```python
 import os
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import openai
@@ -49,4 +48,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-```
