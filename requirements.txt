@@ -1,3 +1,5 @@
-python-telegram-bot==13.7
+python-telegram-bot
 openai
 urllib3
+requests
+certifi
