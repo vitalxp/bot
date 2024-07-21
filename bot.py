@@ -1,5 +1,6 @@
 import os
-from telegram.ext import Updater, CommandHandler, MessageHandler, filters
+from telegram import Update
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 import openai
 import logging
 
@@ -10,14 +11,14 @@ OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 openai.api_key = OPENAI_API_KEY
 
 # Настройка логирования
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levellevel%s - %(message)s',
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def start(update, context):
-    update.message.reply_text('Привет! Я бот для генерации промптов для GPT-4. Отправь мне сообщение, и я сгенерирую ответ.')
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text('Привет! Я бот для генерации промптов для GPT-4. Отправь мне сообщение, и я сгенерирую ответ.')
 
-def handle_message(update, context):
+async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user_text = update.message.text
     response = openai.Completion.create(
         engine="gpt-4",  # Убедитесь, что используете правильное имя модели
@@ -25,26 +26,20 @@ def handle_message(update, context):
         max_tokens=150
     )
     bot_reply = response.choices[0].text.strip()
-    update.message.reply_text(bot_reply)
+    await update.message.reply_text(bot_reply)
 
-def main():
-    # Создание объекта Updater и передача ему токена бота
-    updater = Updater(TELEGRAM_BOT_TOKEN, use_context=True)
+def main() -> None:
+    # Создание объекта Application и передача ему токена бота
+    application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
     
     # Создание диспетчера для обработки команд и сообщений
-    dp = updater.dispatcher
-
-    # Обработчик команд "/start"
-    dp.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("start", start))
     
     # Обработчик всех текстовых сообщений
-    dp.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
     # Запуск бота
-    updater.start_polling()
-
-    # Бот будет работать до остановки с клавиатуры (Ctrl+C)
-    updater.idle()
+    application.run_polling()
 
 if __name__ == '__main__':
     main()
