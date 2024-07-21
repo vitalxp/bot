@@ -1,5 +1,5 @@
 import os
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram.ext import Updater, CommandHandler, MessageHandler, filters
 import openai
 import logging
 
@@ -20,7 +20,7 @@ def start(update, context):
 def handle_message(update, context):
     user_text = update.message.text
     response = openai.Completion.create(
-        engine="text-davinci-003",  # Напоминаем, что это псевдоним для GPT-4
+        engine="gpt-4",  # Убедитесь, что используете правильное имя модели
         prompt=user_text,
         max_tokens=150
     )
@@ -38,7 +38,7 @@ def main():
     dp.add_handler(CommandHandler("start", start))
     
     # Обработчик всех текстовых сообщений
-    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_message))
+    dp.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
     # Запуск бота
     updater.start_polling()
