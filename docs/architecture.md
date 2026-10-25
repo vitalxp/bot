@@ -7,7 +7,9 @@
 Связанные документы:
 
 - [order-capture-and-parsing.md](order-capture-and-parsing.md) — перехват карточки заказа Bolt/Uber, парсер, автоприём. Содержит разбор реальных образцов.
-- [steering-wheel-control.md](steering-wheel-control.md) — управление приложением кнопками на руле (Bluetooth / AVRCP).
+- [steering-wheel-control.md](steering-wheel-control.md) — управление приложением кнопками на руле (Bluetooth / AVRCP, HFP-кнопка «голос», BT-пульт).
+- [vehicle-compatibility.md](vehicle-compatibility.md) — какие машины ездят в Uber/Bolt в Европе и как управление с руля поддерживается на каждой платформе мультимедиа.
+- [reports.md](reports.md) — отчёты за сутки и по часам по всем предложениям заказов.
 
 ## 0. Исходные условия
 
@@ -140,7 +142,8 @@ flowchart LR
 | `core-scoring` | Оценка заказа (раздел 4). Полностью офлайн, цель < 100 мс. | чистый Kotlin |
 | `feature-decision` | `DecisionPolicy` (советник / автоприём с условиями), оверлей поверх Bolt/Uber (`SYSTEM_ALERT_WINDOW`) с вердиктом и цифрами, TTS, вибропаттерн; окно решения с таймаутом; приём подтверждения с экрана, руля или от политики. | `WindowManager`, `TextToSpeech`, `Vibrator` |
 | `feature-autotap` | Нажатие «Принять»/«Отклонить» в окне Bolt/Uber через тот же `AccessibilityService`. Используется (а) после явного действия водителя (кнопка руля), (б) в режиме автоприёма — по политике. Предохранители: см. отдельный документ, раздел 6. | `AccessibilityNodeInfo.performAction`, `dispatchGesture` |
-| `feature-wheel` | Управление кнопками на руле — [steering-wheel-control.md](steering-wheel-control.md). | `MediaSessionCompat`, `AudioFocus`, ExoPlayer |
+| `feature-wheel` | Управление кнопками на руле — [steering-wheel-control.md](steering-wheel-control.md); профили головных устройств и автоопределение машины — [vehicle-compatibility.md](vehicle-compatibility.md). | `MediaSessionCompat`, `AudioFocus`, ExoPlayer, `BluetoothHeadset` |
+| `feature-reports` | Отчёты за сутки и по часам по всем предложениям: агрегатор часовых корзин, генератор инсайтов, экран с часовой лентой, экспорт CSV/PDF, сводки в конце смены и утром — [reports.md](reports.md). | Room, `WorkManager`, `PdfDocument` |
 | `feature-events` | Лента событий и карта: прилёты, суда, концерты, матчи; рекомендация «куда ехать» на горизонте 15/30/60 минут; пуши о «волнах». | MapLibre, `WorkManager` |
 | `feature-shift` | Смена: старт/стоп, GPS-трек, учёт заказов (принятые/отклонённые/выполненные), факт vs цель, перерывы. | `FusedLocationProvider`, foreground service |
 | `feature-auth` | Регистрация и вход по e-mail и паролю, подтверждение e-mail, сброс пароля, хранение токенов в Android Keystore, офлайн-вход по кешированной сессии, выход со всех устройств. | `EncryptedSharedPreferences`, Ktor Auth |
@@ -334,7 +337,9 @@ E*     = quantile(E за последние 7 дней в регионе/daypart
 | `demand` | Тепловая карта спроса по гексам H3 (разрешение 8) × час недели: история предложений/заказов водителей региона + вклад событий. |
 | `tariff` | `TariffLearner` — тарифные модели по (регион, платформа); `FeeLearner` — модель переменной комиссии Uber по фактам выплат; референсные медианы `R_km`, `R_h` и квантили `E` по (регион, daypart). |
 | `parser-llm` | Разбор неизвестных карточек через LLM, генерация кандидата правила, полуавтоматическое утверждение. |
-| `notify` | Push (FCM) о волнах и рекомендациях; опционально — новый Telegram-канал уведомлений (отдельный бот, не связанный с `bot.py`). |
+| `reports` | Серверный расчёт часовых/дневных агрегатов по тем же правилам, что на телефоне; сравнение с регионом и с историей; экспорт; пересчёт при смене версии формул ([reports.md](reports.md)). |
+| `headunits` | Каталог `HeadUnitProfile` (особенности магнитол) и приём анонимных отчётов «Теста кнопок»; автосоздание профилей по сходящимся отчётам ([vehicle-compatibility.md](vehicle-compatibility.md)). |
+| `notify` | Push (FCM) о волнах, рекомендациях и готовых сводках; опционально — новый Telegram-канал уведомлений (отдельный бот, не связанный с `bot.py`). |
 
 Хранилище: PostgreSQL + PostGIS, Redis (кеш, pub/sub для WebSocket).
 
@@ -417,6 +422,9 @@ expected_people, confidence, source, source_ref, updated_at
 - `tariff_models` — region_id, platform, коэффициенты, качество, дата.
 - `fee_observations` — driver_id, order_id, price_shown, paid_out, fee_pct, source (screen / statement).
 - `reference_rates` — region_id, daypart, median_R_km, median_R_h, quantiles_E[], window, updated_at.
+- `outcomes` — order_id, status (completed / rider_cancelled / driver_cancelled), actual_pickup_min, actual_trip_min, paid_out, completed_at.
+- `report_hourly`, `report_daily` — агрегаты отчётов (схема в reports.md, раздел 6).
+- `headunit_profiles`, `headunit_reports` — профили магнитол и анонимные отчёты «Теста кнопок».
 - `shifts`, `shift_points` — смены и GPS-трек (с прореживанием).
 - `scoring_configs` — версии коэффициентов, персональные переопределения.
 
@@ -442,11 +450,11 @@ taxipilot/
 │   ├── app/
 │   ├── core-capture/ core-parser/ core-region/ core-scoring/
 │   ├── feature-decision/ feature-autotap/ feature-wheel/ feature-events/ feature-shift/
-│   ├── feature-settings/ feature-onboarding/
+│   ├── feature-reports/ feature-settings/ feature-onboarding/ feature-auth/
 │   ├── data-local/ data-remote/ service-foreground/
-│   └── testdata/order-cards/        # реальные карточки как фикстуры парсера
+│   └── testdata/order-cards/ testdata/shifts/   # реальные карточки и синтетические смены как фикстуры
 ├── backend/
-│   ├── app/api/ app/region/ app/collectors/ app/demand/ app/tariff/ app/parser_llm/ app/notify/
+│   ├── app/api/ app/auth/ app/region/ app/collectors/ app/demand/ app/tariff/ app/reports/ app/headunits/ app/parser_llm/ app/notify/
 │   ├── migrations/ (alembic)
 │   └── tests/
 ├── docs/                            # эти документы переезжают сюда
@@ -458,12 +466,13 @@ taxipilot/
 1. **Проверка перехвата на реальном телефоне.** Прототип `AccessibilityService`: дамп дерева окна Bolt/Uber при появлении карточки. Выясняем, есть ли текстовые узлы и resource-id. Это главный технический риск — снимаем первым.
 2. **Парсер на реальных образцах.** Семантические правила + словари RU/PL/EN, фикстуры из скриншотов, тесты.
 3. **Скоринг + советник.** Две ставки, индекс `E` на локальных медианах, оверлей, TTS, лог решений, настройка комиссий/себестоимости. Приложение полезно уже на этом этапе без сервера.
-4. **Кнопки на руле и голосовая кнопка.** Модуль `feature-wheel`: AVRCP-путь (Prius 30+/Corolla) и HFP-путь через роль ассистента (все Prius с кнопкой «голос»).
-5. **Автоприём.** `feature-autotap`, политика, окно вето, предохранители.
-6. **Backend минимум: auth + регион.** Регистрация/вход по e-mail, `RegionProfileService` на OSM/OurAirports, синхронизация логов, референсные медианы по региону, правила парсера с сервера, LLM-fallback, `FeeLearner` по фактам выплат.
-7. **События: прилёты (OpenSky), суда (AIS), погода.** Универсальные источники, лента событий, рекомендация «куда ехать».
-8. **События: концерты, спорт, транспорт, праздники.** PredictHQ/Ticketmaster/football-data, GTFS-RT.
-9. **Тепловая карта и тарифные модели.** Калибровка по исходам, персональные коэффициенты.
+4. **Кнопки на руле и голосовая кнопка.** Модуль `feature-wheel`: AVRCP-путь, HFP-путь через роль ассистента, BT-пульт; профили магнитол и «Тест кнопок» для парка из vehicle-compatibility.md (сначала Toyota, VW Group, Hyundai/Kia — это > 50 % парка).
+5. **Отчёты.** `feature-reports`: часовые корзины, дневная сводка, инсайты, сводка в конце смены; на этом этапе — только локально.
+6. **Автоприём.** `feature-autotap`, политика, окно вето, предохранители.
+7. **Backend минимум: auth + регион.** Регистрация/вход по e-mail, `RegionProfileService` на OSM/OurAirports, синхронизация логов, референсные медианы по региону, правила парсера с сервера, LLM-fallback, `FeeLearner` по фактам выплат.
+8. **События: прилёты (OpenSky), суда (AIS), погода.** Универсальные источники, лента событий, рекомендация «куда ехать».
+9. **События: концерты, спорт, транспорт, праздники.** PredictHQ/Ticketmaster/football-data, GTFS-RT.
+10. **Тепловая карта, тарифные модели, серверные отчёты.** Калибровка по исходам, персональные коэффициенты, сравнение отчётов с регионом и экспорт.
 
 ## 10. Открытые вопросы
 

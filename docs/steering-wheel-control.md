@@ -338,7 +338,9 @@ sequenceDiagram
 ## 11. Совместимость с реальным парком: Toyota Prius 20/30/40, Prius+, Corolla Hybrid
 
 Проверено по руководствам Toyota и отчётам владельцев (PriusChat, NCF-гайд Toyota 2010, руководство
-Prius 2016, руководство Toyota Touch 2 / Corolla).
+Prius 2016, руководство Toyota Touch 2 / Corolla). Полная матрица по всему парку Uber/Bolt (Skoda/VW,
+Hyundai/Kia, Ford, Mercedes/BMW, Tesla, Dacia/Renault, Stellantis, нештатные магнитолы), профили
+головных устройств и автоопределение — в [vehicle-compatibility.md](vehicle-compatibility.md).
 
 | Автомобиль | Штатная магнитола | Bluetooth-профили | Кнопки руля | Что это значит для нас |
 |------------|-------------------|-------------------|-------------|------------------------|
