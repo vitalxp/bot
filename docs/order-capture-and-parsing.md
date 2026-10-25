@@ -51,7 +51,7 @@ Nowodworskiego 48A, Gdynia 81-025
 ```
 
 Ожидаемый `OrderOffer`: platform=BOLT, product="Bolt", price=16.70 PLN, priceBasis=NET_AFTER_COMMISSION,
-tags={CASH, OUT_OF_RANGE, SCHEDULED?, NO_PENALTY_DECLINE}, rider="Malwina", rating=5.0,
+tags={CASH, OUT_OF_RANGE, SCHEDULED, NO_PENALTY_DECLINE}, rider="Malwina", rating=5.0,
 pickup=45 мин/45.7 км «Castorama, Grunwaldzka 5, Rumia», trip=10 мин/6.1 км «Nowodworskiego 48A, Gdynia 81-025».
 Вердикт: **Пропустить** (жёсткое правило OUT_OF_RANGE + подача > 20 мин).
 
@@ -70,9 +70,9 @@ ulica płk. Jana Pałubickiego 6, Gdańsk
 Akceptuj
 ```
 
-Ожидаемый `OrderOffer`: platform=UBER, product="UberX", price=9.54 PLN, priceBasis=GROSS_BEFORE_COMMISSION
-(по словарю; уточняется настройкой), tags={EXCLUSIVE}, rating=4.95, pickup=4/1.6, trip=7/5.3.
-Вердикт: зависит от нормализации — см. architecture.md, раздел 4.
+Ожидаемый `OrderOffer`: platform=UBER, product="UberX", price=9.54 PLN, priceBasis=GROSS_BEFORE_VARIABLE_FEE
+(Uber всегда показывает сумму до своей переменной комиссии), priceNet ≈ 6.6 (fee_est 30,75 %),
+tags={EXCLUSIVE}, rating=4.95, pickup=4/1.6, trip=7/5.3. Вердикт: **Пропустить** (E ≈ 0.56, см. architecture.md 4.5).
 
 **uber_ru_001** (интерфейс RU, поверх — навигация)
 
@@ -91,9 +91,11 @@ ulica Konna 40, Kolbudy
 Принять
 ```
 
-Ожидаемый `OrderOffer`: product="UberX Priority", price=26.46, priceBasis=NET_AFTER_COMMISSION,
+Ожидаемый `OrderOffer`: product="UberX Priority", price=26.46, priceBasis=GROSS_BEFORE_VARIABLE_FEE
+(несмотря на строку «С вычетом сервисного сбора» — см. 3.2, квалификаторы), priceNet ≈ 18.3,
 ratePerKm=3.35, bonus=4.59, tags={EXCLUSIVE, PRIORITY}, rating=4.96, pickup=2/1.3, trip=18/6.6,
-dropoff вне города (Kolbudy) → `reposition_min` из тарифной модели. Вердикт: **Брать** при цели ≤ 45 zł/ч.
+dropoff вне города (Kolbudy) → `deadhead_factor` из тарифной модели. Вердикт: на усмотрение (E ≈ 1.03): по цене выглядит
+отлично, после оценки комиссии и с учётом подачи — средний; брать при низком потоке предложений.
 
 **bolt_pl_001** (iPhone другого водителя — для нас только как образец текста, интерфейс PL)
 
@@ -190,13 +192,21 @@ on-device). Кадр берём только по триггеру уведом�
 | `NO_PENALTY_DECLINE` | Отказ не повлияет… | Odrzucenie nie wpłynie… | Declining won't affect… | снижает цену отказа |
 | `LONG_TRIP` | Длинная поездка | Długi przejazd | Long trip | информирование |
 
-Квалификаторы цены:
+Квалификаторы цены. **Основание цены определяется платформой, а не текстом строки**: по подтверждению
+водителей и документации, Bolt показывает сумму «на руки», Uber — сумму до своей переменной комиссии
+(3–40 %, в среднем ~25 %, вычисляется при принятии). Русская строка Uber «С вычетом сервисного сбора,
+в т.ч. НДС…» и польская «Kwota nie zawiera prowizji, ale zawiera podatek» описывают одну и ту же
+величину — локализации расходятся, поэтому строка только логируется и служит для отслеживания
+изменений, а `priceBasis` берётся из таблицы платформ (обновляемой с сервера по регионам):
 
-| Канон | Варианты |
-|-------|----------|
-| `NET_AFTER_COMMISSION` | После вычета комиссии; netto z podatkiem; С вычетом сервисного сбора; After commission; po odliczeniu prowizji |
-| `GROSS_BEFORE_COMMISSION` | Kwota nie zawiera prowizji; Сумма без учёта комиссии; Excludes service fee |
-| `UNKNOWN` | строка не найдена → применяем настройку по умолчанию для платформы |
+| Платформа | `priceBasis` | `priceNet` |
+|-----------|--------------|------------|
+| Bolt | `NET_AFTER_COMMISSION` | `price` |
+| Uber | `GROSS_BEFORE_VARIABLE_FEE` | `price × (1 − fee_est)`; `fee_est` из `FeeLearner`, старт 25 % × 1,23 (VAT) |
+| Неизвестная / новая | `UNKNOWN` | `price × (1 − default_fee_region)`, пометка «оценочно» |
+
+Известные строки-квалификаторы (для журнала и алертов при изменении): «После вычета комиссии», «netto z
+podatkiem», «С вычетом сервисного сбора», «Kwota nie zawiera prowizji», «After commission», «Excludes service fee».
 
 Метки кнопок (`ACCEPT_LABELS` / `DECLINE_LABELS`), они же якоря карточки:
 
@@ -221,6 +231,15 @@ DECLINE: Отклонить, Odrzuć, Decline, Відхилити, Ablehnen, Ref
 
 По тому, какие варианты словаря совпали (RU/PL/EN). Нужно для языка TTS-подтверждений и подбора
 `ACCEPT_LABELS` при автотапе.
+
+### 3.5 Факты выплат для `FeeLearner`
+
+Чтобы оценка комиссии Uber сходилась к реальности, тот же `AccessibilityService` распознаёт экран
+**завершённой поездки** Uber (якоря: заголовок «Поездка завершена / Przejazd zakończony», строки «Ваш
+доход / Twoje zarobki», «Сервисный сбор / Opłata za usługi») и извлекает фактическую выплату и сбор.
+Сопоставление с предложением — по адресам и времени принятия. Если экран не показывается или формат
+не распознан — резерв: импорт недельной выписки (CSV/PDF от партнёра-флота) в настройках.
+Для Bolt факты тоже логируются (контроль, что «на руки» действительно совпадает с карточкой).
 
 ## 4. Политика решения (`DecisionPolicy`)
 
