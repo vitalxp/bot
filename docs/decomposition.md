@@ -71,7 +71,9 @@ flowchart TB
 - T0.1.1 Монорепо `taxicom`: `android/`, `backend/`, `docs/`, CI (lint, unit, instrumented на эмуляторе). W0 P0
 - T0.1.2 Docker-compose: PostgreSQL+PostGIS, Redis, backend, worker. W0 P0
 - T0.1.3 Окружения: dev / staging / prod; секреты не в git. W0 P0
-- T0.1.4 Канал распространения APK (свой хостинг + in-app обновление); Play Store не цель. W0 P1
+- T0.1.4 Канал распространения APK на `https://taxicom.app` + in-app обновление; Play Store не цель. W0 P1
+- T0.1.5 DNS и TLS: `taxicom.app`, `www.taxicom.app`, `api.taxicom.app`; почта `noreply@` / `reports@` / `hello@taxicom.app`. W0 P0
+- T0.1.6 Лендинг: название Taxi Commandos, скачать APK, политика конфиденциальности. W0 P1
 
 ### F0.2 Auth и аккаунт
 - T0.2.1 Регистрация e-mail+пароль, Argon2id, verify-email, forgot/reset. W0 P0
@@ -297,6 +299,7 @@ flowchart TB
 - T9.3.4 **Telegram:** отдельный бот `@taxicom_bot` (не `bot.py`): `/start` + привязка chat_id к аккаунту по одноразовому коду из приложения; сводка текстом + картинка ленты; команда `/report вчера|неделя`. W4 P0
 - T9.3.5 Настройки: куда слать (e-mail / TG / оба), когда, язык, включать ли адреса в CSV. W4 P0
 - T9.3.6 Озвучка конца смены 20 с — уже в reports; остаётся. W4 P1
+- T4.9 Опционально: flavor Lite в Google Play (`app.taxicom.commandos.lite`) без Accessibility/автотапа/снимка чужих экранов — после стабильного дашборда. Условия — [google-play.md](google-play.md). Не блокер W0–W4.
 
 ---
 
