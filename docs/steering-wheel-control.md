@@ -14,13 +14,13 @@ sequenceDiagram
     participant HU as Головное устройство
     participant BT as Android Bluetooth стек
     participant MSM as MediaSessionManager
-    participant App as TaxiPilot MediaSession
+    participant App as Taxi Commandos MediaSession
     participant Other as Spotify / Навигатор
 
     W->>HU: нажатие "трек вперёд"
     HU->>BT: AVRCP PASSTHROUGH (FORWARD)
     BT->>MSM: KeyEvent KEYCODE_MEDIA_NEXT
-    alt окно решения открыто - сессия TaxiPilot активна и "играет"
+    alt окно решения открыто - сессия Taxi Commandos активна и "играет"
         MSM->>App: onMediaButtonEvent
         App-->>HU: метаданные трека = карточка заказа
     else окно закрыто
@@ -50,7 +50,7 @@ sequenceDiagram
 | Режим | Когда сессия активна | Что получает Spotify/навигатор | Для кого |
 |-------|----------------------|-------------------------------|----------|
 | **Окно решения** (по умолчанию) | Только пока открыто окно `Deciding` (пришёл заказ, таймер не истёк). После решения сессия отпускается и музыка возвращается. | Пауза/приглушение на 5–20 с во время заказа | Водители, которые слушают музыку/подкасты |
-| **Постоянный** | Всегда, пока идёт смена | Ничего не получает — медиакнопки полностью у TaxiPilot | Водители без музыки; хотят кнопками листать события, повторять рекомендацию и т.п. |
+| **Постоянный** | Всегда, пока идёт смена | Ничего не получает — медиакнопки полностью у Taxi Commandos | Водители без музыки; хотят кнопками листать события, повторять рекомендацию и т.п. |
 | **Выключен** | Никогда | Всё | Нет кнопок на руле / машина без BT |
 
 Переключение — в настройках и быстрым тумблером в уведомлении foreground-сервиса.
@@ -131,7 +131,7 @@ class WheelController(
     private val keyMap: KeyMap,
     private val bus: ActionBus,
 ) {
-    private val session = MediaSessionCompat(context, "TaxiPilotWheel").apply {
+    private val session = MediaSessionCompat(context, "TaxiCommandosWheel").apply {
         setCallback(object : MediaSessionCompat.Callback() {
             override fun onMediaButtonEvent(intent: Intent): Boolean {
                 val event = intent.getParcelableExtra<KeyEvent>(Intent.EXTRA_KEY_EVENT) ?: return false
@@ -290,7 +290,7 @@ sequenceDiagram
 <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
 <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" /> <!-- только чтобы показать имя магнитолы в настройках -->
 
-<service android:name=".service.TaxiPilotForegroundService"
+<service android:name=".service.TaxiCommandosForegroundService"
     android:foregroundServiceType="location|mediaPlayback"
     android:exported="false" />
 
@@ -372,7 +372,7 @@ Hyundai/Kia, Ford, Mercedes/BMW, Tesla, Dacia/Renault, Stellantis, нештат�
 навигацией отправляет по HFP команду `AT+BVRA=1` — «активировать распознавание речи на телефоне».
 Android передаёт её приложению, назначенному **ассистентом по умолчанию** (Настройки → Приложения →
 Приложения по умолчанию → Цифровой помощник). На Samsung по умолчанию это Bixby/Google — водитель
-один раз переключает на TaxiPilot.
+один раз переключает на Taxi Commandos.
 
 Реализация:
 
@@ -407,7 +407,7 @@ Android передаёт её приложению, назначенному **�
   ~5 с ждёт и **теряет все следующие нажатия** (подтверждено отчётами по Key Mapper на Galaxy S24, Android 14).
   Завершаем сессию `stopVoiceRecognition` сразу после распознавания — тогда кнопка готова к следующему нажатию.
 - Пока открыт SCO, A2DP приостановлен, музыка/TTS на секунды замолкают — приемлемо.
-- Назначение TaxiPilot ассистентом по умолчанию отключает вызов Google Ассистента этой кнопкой. Для
+- Назначение Taxi Commandos ассистентом по умолчанию отключает вызов Google Ассистента этой кнопкой. Для
   компромисса: длинное нажатие «голос» (или команда «окей гугл») — приложение явно запускает Google-ассистент
   через `Intent(ACTION_VOICE_ASSIST)` с пакетом Google; тестировать на Samsung, поведение зависит от прошивки.
 - На некоторых прошивках Samsung требуется отключить Bixby для кнопки, иначе `VOICE_COMMAND` перехватывается им.

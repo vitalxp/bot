@@ -168,8 +168,8 @@ flowchart LR
   без имён пассажиров.
 - PDF дня (сводка + часовая лента + инсайты) через `PdfDocument` на телефоне — «поделиться».
 - Сервер: `GET /reports/daily?from&to&format=csv|json`, `GET /reports/hourly?date`.
-- **E-mail:** транзакционный Mailer (как в auth); адреса — профиль + опционально бухгалтер; вложения PDF (графики) + CSV.
-- **Telegram:** отдельный бот TaxiPilot (не `bot.py`). Привязка: в приложении код → `/start CODE` в боте → `telegram_chat_id` в профиле. Доставка: текст сводки + изображение часовой ленты; команды `/report yesterday|week`, `/unlink`.
+- **E-mail:** с `reports@taxicom.app` (Mailer как в auth); адреса — профиль + опционально бухгалтер; вложения PDF (графики) + CSV.
+- **Telegram `@taxicom_bot`:** привязка кодом из приложения → `/start CODE`; сводка + картинка ленты; `/report yesterday|week`, `/unlink`.
 
 ## 6. Модель данных
 

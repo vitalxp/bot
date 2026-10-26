@@ -1,4 +1,4 @@
-# Декомпозиция функций и задач TaxiPilot
+# Декомпозиция функций и задач Taxi Commandos
 
 Полный перечень функций и задач реализации. Архитектура — [architecture.md](architecture.md).
 Этот документ — рабочий план: эпики → функции → задачи, зависимости, волна внедрения.
@@ -11,7 +11,8 @@
 | C12 | **Free Now** — полноценная третья платформа. | Те же capture/parser/скоринг/принятие/отмены/акции, что Bolt и Uber. |
 | C13 | **Очередь аэропорта — только у Uber.** | Советник очереди читает Uber; Bolt/Free Now в очередь не ставятся. Оптимизация ожидания — по прилётам. |
 | C14 | Приоритеты **A и B внедряются сразу**, не «потом». | Волны 0–4 закрывают ядро + A + B + графические отчёты + e-mail/Telegram. |
-| C15 | Сводная информация и отчёты — **графически**, отправка на **e-mail и в Telegram**. | Дашборд на кокпите; доставка через сервер (новый TG-бот TaxiPilot, не `bot.py`). |
+| C15 | Сводная информация и отчёты — **графически**, отправка на **e-mail и в Telegram**. | Дашборд на кокпите; доставка через сервер (новый TG-бот Taxi Commandos `@taxicom_bot`, не `bot.py`). |
+| C16 | Название **Taxi Commandos**, домен **taxicom.app**. | Пакет `app.taxicom.commandos`, API `api.taxicom.app`, почта `*@taxicom.app`. |
 
 ```mermaid
 flowchart TB
@@ -24,7 +25,7 @@ flowchart TB
     subgraph cloud [Backend]
         Sync[OfferSync WebSocket]
         API[API + отчёты]
-        TG[TG-бот TaxiPilot]
+        TG[TG-бот Taxi Commandos]
         Mail[Почта]
     end
     P1 --> Sync
@@ -67,7 +68,7 @@ flowchart TB
 ## Эпик E0. Фундамент
 
 ### F0.1 Репозиторий и инфраструктура
-- T0.1.1 Монорепо `taxipilot`: `android/`, `backend/`, `docs/`, CI (lint, unit, instrumented на эмуляторе). W0 P0
+- T0.1.1 Монорепо `taxicom`: `android/`, `backend/`, `docs/`, CI (lint, unit, instrumented на эмуляторе). W0 P0
 - T0.1.2 Docker-compose: PostgreSQL+PostGIS, Redis, backend, worker. W0 P0
 - T0.1.3 Окружения: dev / staging / prod; секреты не в git. W0 P0
 - T0.1.4 Канал распространения APK (свой хостинг + in-app обновление); Play Store не цель. W0 P1
@@ -293,7 +294,7 @@ flowchart TB
 - T9.3.1 PDF дня (графики растром + цифры) на устройстве и на сервере. W4 P0
 - T9.3.2 CSV часов и заказов. W4 P0
 - T9.3.3 **E-mail:** конец смены / утро / понедельник; шаблон PL/RU/EN; вложения PDF+CSV; адрес из профиля + доп. (бухгалтер). W4 P0
-- T9.3.4 **Telegram:** отдельный бот `@taxipilot_…` (не `bot.py`): `/start` + привязка chat_id к аккаунту по одноразовому коду из приложения; сводка текстом + картинка ленты; команда `/report вчера|неделя`. W4 P0
+- T9.3.4 **Telegram:** отдельный бот `@taxicom_bot` (не `bot.py`): `/start` + привязка chat_id к аккаунту по одноразовому коду из приложения; сводка текстом + картинка ленты; команда `/report вчера|неделя`. W4 P0
 - T9.3.5 Настройки: куда слать (e-mail / TG / оба), когда, язык, включать ли адреса в CSV. W4 P0
 - T9.3.6 Озвучка конца смены 20 с — уже в reports; остаётся. W4 P1
 
