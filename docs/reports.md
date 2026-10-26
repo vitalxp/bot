@@ -137,6 +137,10 @@ flowchart LR
 
 ## 5. Представление
 
+Графика — основной канал, не таблица. Живой дашборд кокпита (в т.ч. ландшафт планшета) описан в
+[decomposition.md](decomposition.md) F9.1: шапка смены, светофор Bolt/Uber/Free Now, часовая лента,
+воронка решений, акции, карта, блок «сейчас» (куда ехать / ETR очереди Uber / следующая посадка).
+
 ### 5.1 Экран «Отчёты»
 
 - Выбор дня (календарь с индикатором дохода на каждом дне), переключатель «сутки / смена».
@@ -153,9 +157,10 @@ flowchart LR
 
 | Когда | Что | Канал |
 |-------|-----|-------|
-| Конец смены | 20-секундная озвучка: доход, часов, zł/ч, лучший час, один главный инсайт | TTS + уведомление |
-| 08:00 следующего дня (если смена закончилась после 22:00 — 10:00) | Карточка «Вчера» с тремя цифрами и ссылкой на отчёт | Push |
-| Понедельник 09:00 | Неделя: 7 дней рядом, тренды | Push + e-mail (опционально) |
+| Конец смены | 20-секундная озвучка + PDF | TTS, уведомление, e-mail и/или Telegram (настройка) |
+| 08:00 следующего дня (если смена закончилась после 22:00 — 10:00) | Карточка «Вчера» + картинка ленты | Push, e-mail, Telegram |
+| Понедельник 09:00 | Неделя: 7 дней рядом, тренды, CSV бухгалтеру | Push + e-mail + Telegram |
+| По запросу | `/report вчера\|неделя` в TG; «Поделиться» в приложении | Telegram, e-mail |
 
 ### 5.3 Экспорт
 
@@ -163,6 +168,8 @@ flowchart LR
   без имён пассажиров.
 - PDF дня (сводка + часовая лента + инсайты) через `PdfDocument` на телефоне — «поделиться».
 - Сервер: `GET /reports/daily?from&to&format=csv|json`, `GET /reports/hourly?date`.
+- **E-mail:** транзакционный Mailer (как в auth); адреса — профиль + опционально бухгалтер; вложения PDF (графики) + CSV.
+- **Telegram:** отдельный бот TaxiPilot (не `bot.py`). Привязка: в приложении код → `/start CODE` в боте → `telegram_chat_id` в профиле. Доставка: текст сводки + изображение часовой ленты; команды `/report yesterday|week`, `/unlink`.
 
 ## 6. Модель данных
 
@@ -171,7 +178,7 @@ flowchart LR
 ```
 report_hourly (
   driver_id, region_id, hour_start_local, tz,
-  offers_total, offers_bolt, offers_uber, unparsed,
+  offers_total, offers_bolt, offers_uber, offers_freenow, unparsed,
   accepted, declined_manual, declined_auto_policy, expired, auto_accepted, vetoed,
   net_est, net_actual, net_confirmed_ratio, tips, fee_actual_pct,
   online_min, busy_min, idle_min, break_min,
