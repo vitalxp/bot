@@ -46,7 +46,14 @@ data class ScoringSettings(
     val breakReminderMin: Int = 240,
 
     // Platforms and fees
-    val uberFeePct: Double = 25.0,
+    /**
+     * Poland 2025+: Uber card already shows the amount after Uber's commission
+     * (22 % + 23 % VAT ≈ 27.06 %). Do not subtract the fee again. Switch off only if Uber
+     * reverts to showing the passenger fare before its fee (as in older years / other countries).
+     */
+    val uberPriceIsNet: Boolean = true,
+    /** Uber service fee % before VAT — informational / used only when [uberPriceIsNet] is false. */
+    val uberFeePct: Double = 22.0,
     val uberFeeVat: Boolean = true,
     val freenowFeePct: Double = 20.0,
     val fleetFeePct: Double = 0.0,

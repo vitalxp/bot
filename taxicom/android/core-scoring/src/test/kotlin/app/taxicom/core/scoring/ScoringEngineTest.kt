@@ -26,16 +26,17 @@ class ScoringEngineTest {
         OrderOffer("x", platform, "Bolt", 0, "PLN", price, PriceBasis.NET_AFTER_COMMISSION, pickup = pickup, trip = trip, tags = tags)
 
     @Test fun worksExamplesFromArchitecture() {
-        // architecture.md 4.5, medians 2.6 zł/km and 48 zł/h.
+        // Poland 2025+: Uber card is already after Uber's commission (22%+VAT≈27.06%).
+        // Medians 2.6 zł/km and 48 zł/h. Exclusive tag adds ×1.03.
         val priority = engine.score(offer(SampleCards.UBER_RU_001), day)
-        assertEquals(18.32, priority.net, 0.01)
-        assertEquals(2.32, priority.rKm, 0.01)
-        assertEquals(1.036 * 1.03, priority.e, 0.01) // exclusive bonus on top of E ≈ 1.03
-        assertEquals(Verdict.MAYBE, priority.verdict)
+        assertEquals(26.46, priority.net, 0.01)
+        assertEquals(3.35, priority.rKm, 0.01) // matches the "≈3,35 PLN/км" on the card
+        assertEquals(1.54, priority.e, 0.02)
+        assertEquals(Verdict.TAKE, priority.verdict)
 
         val uberX = engine.score(offer(SampleCards.UBER_PL_001), day)
-        assertEquals(6.61, uberX.net, 0.01)
-        assertEquals(0.56 * 1.03, uberX.e, 0.02)
+        assertEquals(9.54, uberX.net, 0.01)
+        assertEquals(0.84, uberX.e, 0.02)
         assertEquals(Verdict.SKIP, uberX.verdict)
 
         val boltFar = engine.score(offer(SampleCards.BOLT_RU_001), day)
@@ -127,7 +128,11 @@ class ScoringEngineTest {
 
     @Test fun uberFeeEstimateCanBeLearned() {
         val o = offer(SampleCards.UBER_RU_001)
-        assertEquals(26.46 * 0.8, engine.net(o, learnedUberFee = 0.2), 1e-9)
+        // Default PL: card is net — fee estimate is not applied again.
+        assertEquals(26.46, engine.net(o, learnedUberFee = 0.2), 1e-9)
+        val legacy = ScoringEngine(ScoringSettings(uberPriceIsNet = false, uberFeePct = 22.0, uberFeeVat = true))
+        assertEquals(26.46 * (1 - 0.22 * 1.23), legacy.net(o), 0.01)
+        assertEquals(26.46 * 0.8, legacy.net(o, learnedUberFee = 0.2), 1e-9)
     }
 
     @Test fun autoAcceptRespectsGuardRails() {
@@ -164,7 +169,7 @@ class ScoringEngineTest {
     @Test fun phrasesAreShortAndLocalised() {
         val o = offer(SampleCards.UBER_RU_001)
         val s = engine.score(o, day)
-        assertEquals("Uber, 26 злотых, подача 2. 2,3 за километр, 55 в час. На усмотрение.", Phrases.announce(o, s, "ru"))
+        assertEquals("Uber, 26 злотых, подача 2. поездка 18. Брать.", Phrases.announce(o, s, "ru"))
         val good = synthetic(32.0, Segment(3, 1.2, "A"), Segment(14, 7.5, "B"))
         assertEquals("Bolt, 32 złotych, dojazd 3. kurs 14. Bierz.", Phrases.announce(good, engine.score(good, day), "pl"))
     }

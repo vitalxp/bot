@@ -159,7 +159,9 @@
     <string name="set_night_rating">Min. ocena w nocy</string>
     <string name="set_night_pmax">Limit wybredności w nocy</string>
     <string name="set_fees">Platformy i prowizje</string>
-    <string name="set_uber_fee">Szacowana prowizja Uber</string>
+    <string name="set_uber_price_is_net">Uber pokazuje netto (po swojej prowizji)</string>
+    <string name="set_uber_price_is_net_hint">Polska: włączone. Na karcie jest już po ~27 % Ubera. Wyłącz tylko jeśli Uber znów pokaże kwotę przed prowizją.</string>
+    <string name="set_uber_fee">Prowizja Uber (gdy karta jest brutto)</string>
     <string name="set_uber_vat">VAT od prowizji Uber</string>
     <string name="set_freenow_fee">Prowizja FREENOW</string>
     <string name="set_fleet_fee">Prowizja partnera floty</string>

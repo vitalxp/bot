@@ -70,9 +70,9 @@ ulica płk. Jana Pałubickiego 6, Gdańsk
 Akceptuj
 ```
 
-Ожидаемый `OrderOffer`: platform=UBER, product="UberX", price=9.54 PLN, priceBasis=GROSS_BEFORE_VARIABLE_FEE
-(Uber всегда показывает сумму до своей переменной комиссии), priceNet ≈ 6.6 (fee_est 30,75 %),
-tags={EXCLUSIVE}, rating=4.95, pickup=4/1.6, trip=7/5.3. Вердикт: **Пропустить** (E ≈ 0.56, см. architecture.md 4.5).
+Ожидаемый `OrderOffer`: platform=UBER, product="UberX", price=9.54 PLN, priceBasis=NET_AFTER_COMMISSION
+(PL 2025+: Uber показывает сумму уже после своей комиссии ≈ 27,06 %), priceNet = 9.54,
+tags={EXCLUSIVE}, rating=4.95, pickup=4/1.6, trip=7/5.3. Вердикт: **Пропустить** (E ≈ 0.84, см. architecture.md 4.5).
 
 **uber_ru_001** (интерфейс RU, поверх — навигация)
 
@@ -91,11 +91,10 @@ ulica Konna 40, Kolbudy
 Принять
 ```
 
-Ожидаемый `OrderOffer`: product="UberX Priority", price=26.46, priceBasis=GROSS_BEFORE_VARIABLE_FEE
-(несмотря на строку «С вычетом сервисного сбора» — см. 3.2, квалификаторы), priceNet ≈ 18.3,
+Ожидаемый `OrderOffer`: product="UberX Priority", price=26.46, priceBasis=NET_AFTER_COMMISSION
+(строка «С вычетом сервисного сбора» согласуется с фактом: цифра уже после комиссии Uber), priceNet = 26.46,
 ratePerKm=3.35, bonus=4.59, tags={EXCLUSIVE, PRIORITY}, rating=4.96, pickup=2/1.3, trip=18/6.6,
-dropoff вне города (Kolbudy) → `deadhead_factor` из тарифной модели. Вердикт: на усмотрение (E ≈ 1.03): по цене выглядит
-отлично, после оценки комиссии и с учётом подачи — средний; брать при низком потоке предложений.
+dropoff вне города (Kolbudy). Вердикт: **Брать** (E ≈ 1.54; R_km на карточке совпадает с нашим).
 
 **bolt_pl_001** (iPhone другого водителя — для нас только как образец текста, интерфейс PL)
 
@@ -192,17 +191,16 @@ on-device). Кадр берём только по триггеру уведом�
 | `NO_PENALTY_DECLINE` | Отказ не повлияет… | Odrzucenie nie wpłynie… | Declining won't affect… | снижает цену отказа |
 | `LONG_TRIP` | Длинная поездка | Długi przejazd | Long trip | информирование |
 
-Квалификаторы цены. **Основание цены определяется платформой, а не текстом строки**: по подтверждению
-водителей и документации, Bolt показывает сумму «на руки», Uber — сумму до своей переменной комиссии
-(3–40 %, в среднем ~25 %, вычисляется при принятии). Русская строка Uber «С вычетом сервисного сбора,
-в т.ч. НДС…» и польская «Kwota nie zawiera prowizji, ale zawiera podatek» описывают одну и ту же
-величину — локализации расходятся, поэтому строка только логируется и служит для отслеживания
-изменений, а `priceBasis` берётся из таблицы платформ (обновляемой с сервера по регионам):
+Квалификаторы цены. **Основание цены определяется таблицей платформа×регион**, а не текстом строки
+(локализации Uber расходятся). PL 2025+: и Bolt, и Uber показывают сумму уже после комиссии платформы.
+У Uber это ≈ 22 % + 23 % VAT = 27,06 % — цифра на карточке = то, что почти всегда падает в баланс
+(иногда чуть больше). Строки-квалификаторы только логируются для детекции смены политики платформы.
 
-| Платформа | `priceBasis` | `priceNet` |
-|-----------|--------------|------------|
+| Платформа (PL) | `priceBasis` | `priceNet` |
+|----------------|--------------|------------|
 | Bolt | `NET_AFTER_COMMISSION` | `price` |
-| Uber | `GROSS_BEFORE_VARIABLE_FEE` | `price × (1 − fee_est)`; `fee_est` из `FeeLearner`, старт 25 % × 1,23 (VAT) |
+| Uber | `NET_AFTER_COMMISSION` | `price` (повторно комиссию Uber не вычитаем) |
+| Uber (gross-регион / `uber_price_is_net=false`) | `GROSS_BEFORE_VARIABLE_FEE` | `price × (1 − fee_est)`; старт 22 % × 1,23 VAT |
 | Неизвестная / новая | `UNKNOWN` | `price × (1 − default_fee_region)`, пометка «оценочно» |
 
 Известные строки-квалификаторы (для журнала и алертов при изменении): «После вычета комиссии», «netto z

@@ -171,9 +171,12 @@ class OfferParser(private val dict: Dictionaries = Dictionaries.DEFAULT) {
         private val RATING_WITH_NAME = Regex("^(.{0,40}?)\\s*•\\s*(\\d)[.,](\\d{1,2})\\s*★?$")
         private val RATING_ALONE = Regex("^(\\d)[.,](\\d{1,2})\\s*★?$")
 
+        /**
+         * Poland 2025+: Uber shows the amount after its own commission (same basis as Bolt).
+         * Free Now still treated as gross until we confirm on real cards. Server/region table can override.
+         */
         fun basisFor(platform: Platform): PriceBasis = when (platform) {
-            Platform.BOLT -> PriceBasis.NET_AFTER_COMMISSION
-            Platform.UBER -> PriceBasis.GROSS_BEFORE_VARIABLE_FEE
+            Platform.BOLT, Platform.UBER -> PriceBasis.NET_AFTER_COMMISSION
             Platform.FREENOW -> PriceBasis.GROSS_BEFORE_VARIABLE_FEE
         }
 

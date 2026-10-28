@@ -117,11 +117,21 @@ fun SettingsScreen(
             }
 
             Section(stringResource(R.string.set_fees)) {
-                SliderRow(stringResource(R.string.set_uber_fee), s.uberFeePct.toFloat(), 10f..40f, "%.0f %%") {
-                    scope.launch { onUpdate { c -> c.copy(uberFeePct = it.toDouble()) } }
+                SwitchRow(stringResource(R.string.set_uber_price_is_net), s.uberPriceIsNet) {
+                    scope.launch { onUpdate { c -> c.copy(uberPriceIsNet = it) } }
                 }
-                SwitchRow(stringResource(R.string.set_uber_vat), s.uberFeeVat) {
-                    scope.launch { onUpdate { c -> c.copy(uberFeeVat = it) } }
+                Text(
+                    stringResource(R.string.set_uber_price_is_net_hint),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                if (!s.uberPriceIsNet) {
+                    SliderRow(stringResource(R.string.set_uber_fee), s.uberFeePct.toFloat(), 10f..40f, "%.0f %%") {
+                        scope.launch { onUpdate { c -> c.copy(uberFeePct = it.toDouble()) } }
+                    }
+                    SwitchRow(stringResource(R.string.set_uber_vat), s.uberFeeVat) {
+                        scope.launch { onUpdate { c -> c.copy(uberFeeVat = it) } }
+                    }
                 }
                 SliderRow(stringResource(R.string.set_freenow_fee), s.freenowFeePct.toFloat(), 0f..35f, "%.0f %%") {
                     scope.launch { onUpdate { c -> c.copy(freenowFeePct = it.toDouble()) } }

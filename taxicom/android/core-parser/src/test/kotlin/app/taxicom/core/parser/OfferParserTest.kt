@@ -44,7 +44,7 @@ class OfferParserTest {
         val o = r.offer
         assertEquals("UberX", o.product)
         assertEquals(9.54, o.price, 1e-9)
-        assertEquals(PriceBasis.GROSS_BEFORE_VARIABLE_FEE, o.priceBasis)
+        assertEquals(PriceBasis.NET_AFTER_COMMISSION, o.priceBasis)
         assertEquals(setOf(EXCLUSIVE), o.tags)
         assertEquals(4.95, o.riderRating!!, 1e-9)
         assertEquals(Segment(4, 1.6, "ulica Marcina Dragana 12, Gdańsk"), o.pickup)

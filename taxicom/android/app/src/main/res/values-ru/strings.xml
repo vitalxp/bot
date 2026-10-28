@@ -159,7 +159,9 @@
     <string name="set_night_rating">Мин. рейтинг ночью</string>
     <string name="set_night_pmax">Потолок требовательности ночью</string>
     <string name="set_fees">Платформы и комиссии</string>
-    <string name="set_uber_fee">Оценка комиссии Uber</string>
+    <string name="set_uber_price_is_net">Uber показывает «на руки» (после своей комиссии)</string>
+    <string name="set_uber_price_is_net_hint">Польша: вкл. На карточке уже снято ~27 % Uber. Выключайте, только если Uber снова начнёт показывать сумму до комиссии.</string>
+    <string name="set_uber_fee">Комиссия Uber (если карточка «грязными»)</string>
     <string name="set_uber_vat">НДС на комиссию Uber</string>
     <string name="set_freenow_fee">Комиссия FREENOW</string>
     <string name="set_fleet_fee">Комиссия партнёра-флота</string>

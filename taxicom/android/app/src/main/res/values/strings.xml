@@ -169,7 +169,9 @@
     <string name="set_night_rating">Min rating at night</string>
     <string name="set_night_pmax">Pickiness cap at night</string>
     <string name="set_fees">Platforms and fees</string>
-    <string name="set_uber_fee">Uber fee estimate</string>
+    <string name="set_uber_price_is_net">Uber shows net (after its fee)</string>
+    <string name="set_uber_price_is_net_hint">Poland: on. Card already has Uber\'s ~27 % fee removed. Turn off only if Uber starts showing the passenger fare again.</string>
+    <string name="set_uber_fee">Uber fee (when card is gross)</string>
     <string name="set_uber_vat">VAT on Uber fee</string>
     <string name="set_freenow_fee">FREENOW commission</string>
     <string name="set_fleet_fee">Fleet partner fee</string>

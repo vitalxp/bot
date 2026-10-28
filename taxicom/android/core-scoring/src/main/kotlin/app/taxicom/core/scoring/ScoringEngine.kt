@@ -84,12 +84,15 @@ class ScoringEngine(private val settings: ScoringSettings) {
     }
 
     fun net(offer: OrderOffer, learnedUberFee: Double? = null): Double {
-        val gross = offer.price
+        val shown = offer.price
         val platformNet = when (offer.platform) {
-            Platform.BOLT -> if (settings.boltPriceIsNet) gross else gross * (1 - 0.25)
-            Platform.UBER -> gross * (1 - (learnedUberFee ?: settings.uberFeeFraction))
-            Platform.FREENOW -> gross * (1 - settings.freenowFeePct / 100.0)
+            Platform.BOLT -> if (settings.boltPriceIsNet) shown else shown * (1 - 0.25)
+            // PL: card is already after Uber fee. Other regions / legacy: estimate fee out of the shown gross.
+            Platform.UBER -> if (settings.uberPriceIsNet) shown
+            else shown * (1 - (learnedUberFee ?: settings.uberFeeFraction))
+            Platform.FREENOW -> shown * (1 - settings.freenowFeePct / 100.0)
         }
+        // Fleet partner cut (and similar) still applies on top of whatever the platform shows.
         return platformNet * (1 - settings.fleetFeePct / 100.0)
     }
 
