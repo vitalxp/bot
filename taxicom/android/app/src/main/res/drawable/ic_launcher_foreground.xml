@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Taxi Commandos mark: amber chevron (rank insignia) over a taxi roof sign. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFB800"
+        android:pathData="M38,40h32a4,4 0,0 1,4 4v4a2,2 0,0 1,-2 2H36a2,2 0,0 1,-2 -2v-4a4,4 0,0 1,4 -4z" />
+    <path
+        android:fillColor="#FFB800"
+        android:pathData="M30,58 L54,72 L78,58 L78,66 L54,80 L30,66 Z" />
+    <path
+        android:fillColor="#FFB800"
+        android:fillAlpha="0.55"
+        android:pathData="M30,50 L54,64 L78,50 L78,55 L54,69 L30,55 Z" />
+</vector>

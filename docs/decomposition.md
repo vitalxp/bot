@@ -105,7 +105,7 @@ flowchart TB
 ### F1.2 Семантический парсер
 - T1.2.1 Экстракторы: цена+валюта, пары мин/км, рейтинг, адреса, продукт. W0 P0
 - T1.2.2 Словари тегов и кнопок PL/RU/EN/UK, доставка с сервера. W0 P0
-- T1.2.3 `priceBasis` по платформе: Bolt=net, Uber=gross−variable fee, **Free Now** — по факту карточки (проверить на образцах; заложить таблицу). W0 P0
+- T1.2.3 `priceBasis` по платформе×региону: PL Bolt=net, PL Uber=net (после комиссии ≈27 %); gross-режим — переключатель; **Free Now** — по факту карточки. W0 P0
 - T1.2.4 Теги: CASH, OUT_OF_RANGE, SCHEDULED, EXCLUSIVE, PRIORITY, NO_PENALTY_DECLINE, оранжевая рамка Bolt (optional order). W0 P0
 - T1.2.5 Free Now: отличия карточки (цена, комиссия, cash, XL), якоря «Akceptuj». W0 P0
 - T1.2.6 Неразобранное → `raw_samples` (маскированные) → LLM-кандидат правила. W1 P1
@@ -123,7 +123,7 @@ flowchart TB
 
 ### F2.1 Нормализация цены
 - T2.1.1 Bolt: `net = price`. W1 P0
-- T2.1.2 Uber: `net = price × (1 − fee_est)`; `FeeLearner` со стартом 25 % + VAT. W1 P0
+- T2.1.2 Uber PL: `net = price` при `uber_price_is_net`; иначе `price × (1 − fee_est)` (старт 22 %+VAT≈27,06 %); `FeeLearner` сверяет карточку с выплатой. W1 P0
 - T2.1.3 Free Now: `net` по `priceBasis` + комиссия флота. W1 P0
 - T2.1.4 Комиссия флота, VAT — из настроек. W1 P0
 - T2.1.5 Чтение экрана «поездка завершена» / выписка → факты выплат. W2 P1
