@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Taxi Commandos</string>
+    <string name="tagline">Take the orders that pay. Skip the rest.</string>
+
+    <!-- Navigation -->
+    <string name="nav_cockpit">Cockpit</string>
+    <string name="nav_reports">Reports</string>
+    <string name="nav_devices">Devices</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Onboarding -->
+    <string name="onb_welcome_title">Your co-pilot for Bolt, Uber and FREENOW</string>
+    <string name="onb_welcome_1">Every offer is scored in under a second: per km, per hour, with pickup and the way back.</string>
+    <string name="onb_welcome_2">Answer with the steering-wheel buttons — hands stay on the wheel.</string>
+    <string name="onb_welcome_3">Weak offers during a trip are ignored silently, so your acceptance rate stays safe.</string>
+    <string name="onb_start">Get started</string>
+    <string name="onb_role_title">What does this device do?</string>
+    <string name="onb_role_hint">Most drivers use 2–3 phones. One device makes decisions (cockpit), the others read offers.</string>
+    <string name="onb_permissions_title">Permissions</string>
+    <string name="onb_permissions_hint">Each permission is explained before you grant it. You can change them anytime.</string>
+    <string name="onb_done_title">Ready to roll</string>
+    <string name="onb_done_body">Open Bolt, Uber or FREENOW and start your shift. Offers will appear here and in your car.</string>
+    <string name="onb_finish">Open cockpit</string>
+    <string name="next">Next</string>
+    <string name="back">Back</string>
+    <string name="skip_for_now">Skip for now</string>
+    <string name="grant">Allow</string>
+    <string name="granted">Allowed</string>
+
+    <string name="perm_accessibility_title">Read order cards</string>
+    <string name="perm_accessibility_body">Taxi Commandos uses the Accessibility service to read the text of order offers in Bolt, Uber and FREENOW (price, pickup, trip, addresses) and, only if you enable auto-accept, to tap \"Accept\" for you. It reads nothing in other apps. Card text stays on your phone; only numbers for reports are synced.</string>
+    <string name="perm_notifications_title">Detect new offers instantly</string>
+    <string name="perm_notifications_body">Notification access lets us react to the \"new order\" notification ~1 s before the card appears. We only look at notifications from driver apps.</string>
+    <string name="perm_overlay_title">Show the verdict on top</string>
+    <string name="perm_overlay_body">A small bubble over the Bolt/Uber card with the verdict and three numbers.</string>
+    <string name="perm_post_notifications_title">Shift notification</string>
+    <string name="perm_post_notifications_body">Required to keep the assistant running during the shift and to show acceptance-rate alerts.</string>
+    <string name="perm_battery_title">Don\'t get killed by battery saver</string>
+    <string name="perm_battery_body">Samsung and Xiaomi stop background apps. Allow unrestricted battery use for a reliable shift.</string>
+    <string name="perm_lite_note">This is the Google Play edition: card reading and auto-accept are available in the full version from taxicom.app.</string>
+
+    <!-- Roles -->
+    <string name="role_both">Phone with apps + decisions</string>
+    <string name="role_both_hint">Single phone setup: reads offers and makes decisions.</string>
+    <string name="role_capture">Reader</string>
+    <string name="role_capture_hint">Runs Bolt/Uber/FREENOW and reads offers. Decisions come from the cockpit.</string>
+    <string name="role_cockpit">Cockpit</string>
+    <string name="role_cockpit_hint">Shows all offers from every phone, steering-wheel buttons and voice.</string>
+    <string name="role_viewer">Viewer</string>
+    <string name="role_viewer_hint">Tablet or second screen: dashboard and reports only.</string>
+
+    <!-- Auth -->
+    <string name="auth_title_login">Sign in</string>
+    <string name="auth_title_register">Create account</string>
+    <string name="auth_email">E-mail</string>
+    <string name="auth_password">Password</string>
+    <string name="auth_password_hint">At least 10 characters, letters and digits</string>
+    <string name="auth_name">Name (optional)</string>
+    <string name="auth_submit_login">Sign in</string>
+    <string name="auth_submit_register">Create account</string>
+    <string name="auth_switch_to_register">New here? Create an account</string>
+    <string name="auth_switch_to_login">Already have an account? Sign in</string>
+    <string name="auth_offline">Continue offline</string>
+    <string name="auth_offline_hint">Scoring works offline. Sign in later to sync devices and get reports by e-mail and Telegram.</string>
+    <string name="auth_error_credentials">Wrong e-mail or password</string>
+    <string name="auth_error_taken">This e-mail is already registered</string>
+    <string name="auth_error_network">No connection to taxicom.app. Try again.</string>
+    <string name="auth_error_weak">Password is too weak</string>
+
+    <!-- Cockpit -->
+    <string name="shift_start">Start shift</string>
+    <string name="shift_stop">End shift</string>
+    <string name="shift_on">On shift %1$s</string>
+    <string name="waiting_title">Waiting for offers</string>
+    <string name="waiting_body">%1$.0f offers/h nearby · taking from %2$s</string>
+    <string name="waiting_off">Start the shift to score offers from Bolt, Uber and FREENOW.</string>
+    <string name="try_sample">Try a sample offer</string>
+    <string name="verdict_take">TAKE</string>
+    <string name="verdict_maybe">YOUR CALL</string>
+    <string name="verdict_skip">SKIP</string>
+    <string name="action_accept">Accept</string>
+    <string name="action_decline">Decline</string>
+    <string name="action_ignore">Ignore</string>
+    <string name="net_estimate">≈ %1$s net</string>
+    <string name="per_km">/km</string>
+    <string name="per_hour">/h</string>
+    <string name="vs_typical">vs now</string>
+    <string name="pickup">Pickup</string>
+    <string name="trip">Trip</string>
+    <string name="loop_km">Loop %1$s km incl. way back</string>
+    <string name="today">Today</string>
+    <string name="income">Income</string>
+    <string name="rate_hour">Per hour</string>
+    <string name="accepted_of">Accepted</string>
+    <string name="acceptance">Acceptance</string>
+    <string name="recent_offers">Recent offers</string>
+    <string name="no_offers_yet">No offers yet today</string>
+    <string name="on_trip">On trip</string>
+    <string name="free">Free</string>
+    <string name="auto_countdown">Auto-accept in %1$d s · press ⏮ to cancel</string>
+    <string name="outcome_accepted">Accepted</string>
+    <string name="outcome_declined">Declined</string>
+    <string name="outcome_ignored">Ignored</string>
+    <string name="outcome_expired">Expired</string>
+    <string name="outcome_pending">Live</string>
+    <string name="wheel_hint">Wheel: ⏭ accept · ⏮ decline · ⏯ repeat</string>
+
+    <!-- Reasons -->
+    <string name="reason_below_cost">Below car cost</string>
+    <string name="reason_out_of_range_far">Out of range, long pickup</string>
+    <string name="reason_pickup_too_long">Pickup too long</string>
+    <string name="reason_pickup_for_nothing">Long pickup for a short trip</string>
+    <string name="reason_cash_refused">Cash refused</string>
+    <string name="reason_long_floor">Long trip below loop floor</string>
+    <string name="reason_scheduled">Scheduled order</string>
+    <string name="reason_low_rating">Low rider rating</string>
+    <string name="reason_night">Night</string>
+    <string name="reason_long">Long trip</string>
+    <string name="reason_exclusive">Exclusive</string>
+    <string name="reason_on_trip">On trip: ignore quietly</string>
+    <string name="reason_protect">Protecting acceptance</string>
+    <string name="reason_bonus">Bonus+</string>
+    <string name="reason_dest_hot">Hot destination</string>
+    <string name="reason_dest_dead">Dead zone</string>
+    <string name="reason_free_decline">Free decline</string>
+
+    <!-- Reports -->
+    <string name="range_today">Today</string>
+    <string name="range_yesterday">Yesterday</string>
+    <string name="range_week">7 days</string>
+    <string name="by_hour">Income by hour</string>
+    <string name="platform_split">Platforms</string>
+    <string name="insights">Insights</string>
+    <string name="per_km_label">Per km</string>
+    <string name="offers">Offers</string>
+    <string name="profit_after_cost">Profit after car cost</string>
+    <string name="send_email">Send to e-mail</string>
+    <string name="send_telegram">Send to Telegram</string>
+    <string name="sent">Sent</string>
+    <string name="send_needs_account">Sign in to send reports</string>
+    <string name="report_empty">No offers in this period</string>
+    <string name="insight_best_hour">Best hour %1$s: %2$s/h</string>
+    <string name="insight_missed">%1$d good offers missed while free (≈ %2$s)</string>
+    <string name="insight_ignored">%1$d offers ignored during trips — acceptance rate untouched</string>
+    <string name="insight_regret">%1$d weak orders accepted against the advice</string>
+
+    <!-- Devices -->
+    <string name="devices_title">Your devices</string>
+    <string name="devices_hint">One account, several phones and a tablet. Offers from every reader appear on the cockpit within 0.2 s.</string>
+    <string name="this_device">This device</string>
+    <string name="online">Online</string>
+    <string name="offline">Offline</string>
+    <string name="devices_need_account">Sign in to link devices</string>
+
+    <!-- Settings -->
+    <string name="set_scoring">Order evaluation</string>
+    <string name="set_long_trip_km">Long trip from</string>
+    <string name="set_cost_km">Car cost per km</string>
+    <string name="set_alpha">Weight: km ↔ time</string>
+    <string name="set_max_pickup">Max pickup</string>
+    <string name="set_min_rating">Min rider rating</string>
+    <string name="set_cash">Cash</string>
+    <string name="cash_neutral">Neutral</string>
+    <string name="cash_penalty">−10 %</string>
+    <string name="cash_never">Never</string>
+    <string name="set_night">Night</string>
+    <string name="set_night_hours">Night hours</string>
+    <string name="set_night_rating">Min rating at night</string>
+    <string name="set_night_pmax">Pickiness cap at night</string>
+    <string name="set_fees">Platforms and fees</string>
+    <string name="set_uber_fee">Uber fee estimate</string>
+    <string name="set_uber_vat">VAT on Uber fee</string>
+    <string name="set_freenow_fee">FREENOW commission</string>
+    <string name="set_fleet_fee">Fleet partner fee</string>
+    <string name="set_decisions">Decisions</string>
+    <string name="set_mode_auto">Auto-accept</string>
+    <string name="set_mode_auto_hint">Accepts only clearly good offers, with a veto window. Never during a trip.</string>
+    <string name="set_auto_ratio">Auto-accept from</string>
+    <string name="set_veto">Veto window</string>
+    <string name="set_max_consecutive">Max auto in a row</string>
+    <string name="set_acceptance">Acceptance rate</string>
+    <string name="set_protect_below">Protect below</string>
+    <string name="set_bonus">Bonus+</string>
+    <string name="set_bonus_per_trip">Bonus per trip</string>
+    <string name="set_bonus_hint">Active quest or streak: short orders get the promised bonus added.</string>
+    <string name="set_voice">Voice and wheel</string>
+    <string name="set_tts">Speak offers</string>
+    <string name="set_brief_night">Short phrases at night</string>
+    <string name="set_wheel">Steering-wheel buttons</string>
+    <string name="set_reports">Reports</string>
+    <string name="set_report_email">Daily report by e-mail</string>
+    <string name="set_report_telegram">Daily report in Telegram</string>
+    <string name="set_link_telegram">Link Telegram</string>
+    <string name="set_telegram_linked">Telegram linked</string>
+    <string name="set_account">Account</string>
+    <string name="set_sign_out">Sign out</string>
+    <string name="set_sign_in">Sign in</string>
+    <string name="set_delete_account">Delete account and data</string>
+    <string name="set_delete_confirm">This permanently deletes your account, devices and all reports on taxicom.app.</string>
+    <string name="set_privacy">Privacy policy</string>
+    <string name="set_version">Version %1$s</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="minutes_short">%1$d min</string>
+    <string name="km_short">%1$s km</string>
+
+    <!-- Service and alerts -->
+    <string name="channel_shift">Shift</string>
+    <string name="channel_alerts">Acceptance alerts</string>
+    <string name="notif_shift_title">On shift</string>
+    <string name="notif_shift_text">Scoring offers · wheel buttons active</string>
+    <string name="alert_acceptance">%1$s acceptance %2$s — below %3$s</string>
+    <string name="accessibility_label">Taxi Commandos — order reader</string>
+    <string name="accessibility_description">Reads order offers in Bolt, Uber and FREENOW to score them, and taps Accept only when you enable auto-accept. No other apps are read.</string>
+</resources>

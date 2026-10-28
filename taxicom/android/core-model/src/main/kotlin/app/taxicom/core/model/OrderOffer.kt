@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 enum class Platform(val displayName: String, val packageName: String) {
     BOLT("Bolt", "ee.mtakso.driver"),
     UBER("Uber", "com.ubercab.driver"),
-    FREENOW("FREENOW", "taxi.android.client.driver");
+    FREENOW("FREENOW", "taxi.android.driver");
 
     companion object {
         fun fromPackage(pkg: String?): Platform? = entries.firstOrNull { it.packageName == pkg }
